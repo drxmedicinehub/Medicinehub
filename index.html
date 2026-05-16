@@ -17,7 +17,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
             background: white;
             padding: 20px;
@@ -57,6 +57,28 @@
         button:hover {
             background-color: #0056b3;
         }
+        .category-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .cat-btn {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .cat-btn:hover, .cat-btn.active {
+            background-color: #007bff;
+            color: white;
+        }
         .med-card {
             background: #fdfdfd;
             border-left: 5px solid #28a745;
@@ -70,6 +92,9 @@
             font-weight: bold;
             color: #2c3e50;
         }
+        .med-meta {
+            margin-top: 5px;
+        }
         .med-type {
             display: inline-block;
             background: #e2e8f0;
@@ -77,7 +102,16 @@
             border-radius: 4px;
             font-size: 12px;
             font-weight: bold;
-            margin-top: 5px;
+        }
+        .med-cat-tag {
+            display: inline-block;
+            background: #e1f5fe;
+            color: #0288d1;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
         }
         .med-details {
             margin-top: 10px;
@@ -94,166 +128,341 @@
 <body>
 
 <div class="container">
-    <h1>💊 Medicine Guide App</h1>
+    <h1>💊 Master Medicine Guide</h1>
     
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Dawa ka naam likhein (e.g., Paracetamol, Azithromycin)...">
+        <input type="text" id="searchInput" placeholder="Dawa ya Category ka naam likhein (e.g., Gas, Pain, Sugar)...">
         <button onclick="searchMedicine()">Search</button>
     </div>
 
+    <div class="category-container">
+        <button class="cat-btn" onclick="filterCategory('All')">All</button>
+        <button class="cat-btn" onclick="filterCategory('Bukhar aur Dard')">Bukhar/Dard</button>
+        <button class="cat-btn" onclick="filterCategory('Gas aur Acidity')">Gas/Acidity</button>
+        <button class="cat-btn" onclick="filterCategory('Antibiotics')">Antibiotics</button>
+        <button class="cat-btn" onclick="filterCategory('BP aur Heart')">BP & Heart</button>
+        <button class="cat-btn" onclick="filterCategory('Sugar (Diabetes)')">Sugar</button>
+        <button class="cat-btn" onclick="filterCategory('Khansi aur Allergy')">Khansi/Allergy</button>
+        <button class="cat-btn" onclick="filterCategory('Vitamins aur Taqat')">Vitamins/Taqat</button>
+        <button class="cat-btn" onclick="filterCategory('Pet ke Rog')">Pet Rog (Loose Motion)</button>
+    </div>
+
     <div id="resultContainer">
-        <p style="text-align: center; color: #777;">Kisi dawa ka naam search karein...</p>
+        <p style="text-align: center; color: #777;">Upar kisi category par click karein ya dawa search karein...</p>
     </div>
 </div>
 
 <script>
     const medicineDatabase = [
+        // === BUKHAR AUR DARD ===
         {
-            name: "Paracetamol (Crocin / Calpol)",
-            type: "Tablet / Syrup / Injection",
-            use: "Bukhar (Fever) ko kam karne aur badan dard, sir dard se rahat ke liye kiya jata hai.",
-            dose: "Adults ke liye 500mg-650mg zaroorat ke mutabik. Bachhon ke liye weight ke hisab se Syrup.",
-            warning: "Overdose se liver ko nuksan ho sakta hai. 24 ghante me 4 se zyada tablet na lein."
-        },
-        {
-            name: "Amoxicillin aur Potassium Clavulanate (Augmentin 625)",
+            name: "Paracetamol (Crocin / Calpol / Dolo 650)",
+            category: "Bukhar aur Dard",
             type: "Tablet / Syrup",
-            use: "Yeh ek heavy antibiotic hai jo kaan, naak, gale, fefdo (pneumonia) aur skin ke bade bacterial infections ko theek karta hai.",
-            dose: "Doctor ki salah ke anusar aamtaur par din me 2 baar khane ke baad.",
-            warning: "Isse pet kharab (diarrhea) ho sakta hai. Bina doctor ke poore course ke ise beech me na chhodein."
+            use: "Bukhar kam karne, sir dard, badan dard aur halka dard theek karne me.",
+            dose: "Adults: 500mg - 650mg zaroorat par (Max 4 tablet in 24 hours).",
+            warning: "Overdose se Liver damage ho sakta hai. Alcohol ke sath na lein."
         },
         {
-            name: "Pantoprazole Gastro-resistant (Pan-40 / Pantocid)",
-            type: "Tablet / Injection",
-            use: "Pet me acidity, gas, jalan (heartburn) aur peptic ulcer ke ilaj ke liye.",
-            dose: "Aamtaur par subah khali pet ek tablet.",
-            warning: "Lagne par hi lein, lambe samay tak bina doctor ki salah ke na khayein."
-        },
-        {
-            name: "Cough Syrup (Ascoril / Benadryl / Grilinctus)",
-            type: "Syrup",
-            use: "Khansi (Cough), balgam aur gale ki kharash ko theek karne ke liye.",
-            dose: "Adults ke liye 5-10 ml din me do se teen baar.",
-            warning: "Kuch syrup se neend aa sakti hai, isliye ise peekar driving na karein."
-        },
-        {
-            name: "Ceftriaxone Sodium (Monocef Injection)",
-            type: "Injection (IV/IM)",
-            use: "Severe bacterial infections, typhoid bukhar, aur operation ke baad bade infections se bachne ke liye.",
-            dose: "Sirf hospital ya clinic me doctor/nurse dwara lagaya jata hai.",
-            warning: "Isko ghar par khud se lagane ki koshish bilkul na karein. Skin allergy test zaroori hai."
-        },
-        {
-            name: "Cetirizine Hydrochloride (Alerid / Okacet)",
-            type: "Tablet / Syrup",
-            use: "Sardi-jukham, naak behna, aankh se pani aana aur skin allergy/khujli ko theek karne ke liye.",
-            dose: "Adults ke liye 10mg ki ek tablet raat ko sote samay.",
-            warning: "Ise khane ke baad neend ya susti aa sakti hai, isliye ise lekar koi bhaari kaam ya driving na karein."
-        },
-        {
-            name: "Metformin Hydrochloride (Glycomet)",
-            type: "Tablet",
-            use: "Type 2 Diabetes (Sugar) ke mareezon me blood sugar level ko control karne ke liye.",
-            dose: "Doctor ki salah ke anusar, aamtaur par khane ke baad.",
-            warning: "Bina doctor ke kahe is dawa ko achanak band na karein. Isse sugar achanak badh sakti hai."
-        },
-        {
-            name: "Amlodipine Besylate (Amlong / Stamlo)",
-            type: "Tablet",
-            use: "High Blood Pressure (Uchch raktachaap) ko kam karne aur dil ki bimariyon se bachane ke liye.",
-            dose: "Din me ek baar, doctor ke bataye gaye sahi power (2.5mg / 5mg) ke hisab se.",
-            warning: "Is dawa se kuch logon ke pairon me halki sujan aa sakti hai. Regular BP check karate rahein."
-        },
-        {
-            name: "Azithromycin Dihydrate (Azithral 500)",
-            type: "Tablet / Syrup",
-            use: "Gale ka infection (Tonsils), typhoid, aur daston ke infection me use hone wali antibiotic.",
-            dose: "Aamtaur par din me 1 tablet, lagatar 3 se 5 din tak.",
-            warning: "Ise khane se pet me halke dard ya ulti jaisa lag sakta hai."
-        },
-        {
-            name: "Diclofenac Sodium aur Paracetamol (Voveran Plus / Reactin)",
+            name: "Diclofenac Sodium (Voveran)",
+            category: "Bukhar aur Dard",
             type: "Tablet / Gel / Injection",
-            use: "Ghutno ka dard, gathiya (Arthritis), pathri ka dard ya kisi bhi bade sharirik dard ko turant rokne ke liye.",
-            dose: "Dard hone par khane ke baad ek tablet.",
-            warning: "Khali pet bilkul na lein, isse kidney aur pet par bura asar padta hai."
-        },
-        {
-            name: "Atorvastatin Calcium (Lipitor / Tonact)",
-            type: "Tablet",
-            use: "Khoon me badhe hue kharab Cholesterol ko kam karne aur Heart Attack ke khatre ko rokne ke liye.",
-            dose: "Aamtaur par raat ko sote samay ek tablet doctor ke kahe mutabik.",
-            warning: "Agar is dawa ko khane ke baad maaspeshiyon (muscles) me tez dard ho, toh doctor ko untunt batayein."
-        },
-        {
-            name: "Omeprazole aur Domperidone (Omez-D)",
-            type: "Capsule",
-            use: "Gale me jalan, khatti dakar aana aur gas ke sath ulti ya jichalaane (nausea) ko rokne ke liye.",
-            dose: "Subah khane ke 30 minute pehle khali pet.",
-            warning: "Bina doctor ki salah ke lagatar mahino tak ise na khayein."
-        },
-        {
-            name: "Tramadol Hydrochloride (Ultram)",
-            type: "Tablet / Capsule / Injection",
-            use: "Operation ke baad ya accident ke baad hone wale asahniya aur bahut tez dard (Severe Pain) ko theek karne ke liye.",
-            dose: "Sirf aur sirf doctor ke parche (prescription) par hi milti aur li jaati hai.",
-            warning: "Yeh ek nasha paida karne wali dawa ho sakti hai, isliye iska aadat se bachna zaroori hai."
-        },
-        {
-            name: "Ranitidine (Aciloc 150 / Rantac)",
-            type: "Tablet / Injection",
-            use: "Pet me normal gas, jalan aur acidity ko jald theek karne ki sasti aur asardar dawa.",
-            dose: "Din me do baar khane se pehle ya baad me zaroorat ke hisab se.",
-            warning: "Agar koi gambhir bimari hai toh doctor se pooch kar hi lein."
-        },
-        {
-            name: "Ofloxacin aur Ornidazole (O2 Tablet)",
-            type: "Tablet / Syrup",
-            use: "Pet kharab hone par, loose motions (pechish) aur pet ke infection ko theek karne ke liye.",
-            dose: "Adults ke liye subah-shaam ek-ek tablet khane ke baad (3 din tak).",
-            warning: "Is dawa ko lene ke baad paani khoob peena chahiye."
+            use: "Tez dard, gathiya (arthritis), pathri ka dard aur sujan kam karne me.",
+            dose: "Khane ke baad ek tablet zaroorat padne par.",
+            warning: "Khali pet bilkul na lein, isse pet me ulcer ya kidney par bura asar padta hai."
         },
         {
             name: "Ibuprofen (Brufen 400)",
-            type: "Tablet / Syrup",
-            use: "Daant ka dard, maaspeshiyon ka khinchav, aur bleeding ke bina hone wale dardo me faydemand.",
-            dose: "Khane ke baad ek tablet zaroorat padne par.",
-            warning: "Asthma (dama) ke mareezon ko ise lene se pehle doctor se poochna chahiye."
+            category: "Bukhar aur Dard",
+            type: "Tablet",
+            use: "Daant dard, maaspeshiyon ka khinchav, aur periods ke dard me.",
+            dose: "Din me 2 se 3 baar khane ke baad.",
+            warning: "Asthma ke mareez aur pregnant mahilayein bina doctor se pooche na lein."
         },
         {
-            name: "Levocetirizine aur Montelukast (Montair-LC)",
+            name: "Aceclofenac + Paracetamol (Zerodol-P)",
+            category: "Bukhar aur Dard",
+            type: "Tablet",
+            use: "Peeth dard, gardan dard, aur body ke joints ke tez dard ko rokne me.",
+            dose: "Subah-shaam ek-ek tablet khane ke baad.",
+            warning: "Isse pet me jalan ya acidity ho sakti hai."
+        },
+        {
+            name: "Mefenamic Acid (Meftal Spas)",
+            category: "Bukhar aur Dard",
+            type: "Tablet",
+            use: "Pet me hone wale mroad/dard aur periods (menstrual) ke dard me sabse asardar.",
+            dose: "Dard hone par ek tablet khane ke baad.",
+            warning: "Khali pet na lein, aur lagatar kai dino tak na khayein."
+        },
+
+        // === GAS AUR ACIDITY ===
+        {
+            name: "Pantoprazole (Pan-40 / Pantocid)",
+            category: "Gas aur Acidity",
+            type: "Tablet / Capsule",
+            use: "Pet me tez acidity, gas, chhati me jalan aur peptic ulcer ke ilaj me.",
+            dose: "Subah khali pet (khana khane se 30 min pehle) ek tablet.",
+            warning: "Lambe samay tak bina wajah lene se haddiyan kamzor ho sakti hain."
+        },
+        {
+            name: "Omeprazole + Domperidone (Omez-D)",
+            category: "Gas aur Acidity",
+            type: "Capsule",
+            use: "Gas ke sath-sath ulti jaisa lagna (Nausea) ya khatti dakar aana rokta hai.",
+            dose: "Subah khali pet ek capsule.",
+            warning: "Doctor ki salah ke bina ise mahino tak lagatar na lein."
+        },
+        {
+            name: "Ranitidine (Aciloc 150 / Rantac)",
+            category: "Gas aur Acidity",
+            type: "Tablet",
+            use: "Normal gas, acidity aur pet ki jalan ko jald theek karne ki sasti dawa.",
+            dose: "Din me do baar (subah-shaam) khane se pehle.",
+            warning: "Kidney ke mareez doctor se pooch kar hi dose set karein."
+        },
+        {
+            name: "Sukralfate + Oxetacaine (Sucrafil Suspension)",
+            category: "Gas aur Acidity",
+            type: "Syrup",
+            use: "Pet ke ulcer (chaale) aur food pipe ki tez jalan ko turant thanda karne me.",
+            dose: "2 chammach khana khane ke 1 ghante pehle ya sote samay.",
+            warning: "Ise lene ke turant baad kuch khayein-piyein nahi."
+        },
+
+        // === ANTIBIOTICS ===
+        {
+            name: "Amoxicillin + Clavulanate (Augmentin 625)",
+            category: "Antibiotics",
+            type: "Tablet",
+            use: "Heavy antibiotic. Kaan, naak, gale, pneumonia aur skin ke bade bacterial infection me.",
+            dose: "Din me 2 baar khane ke baad (Course poora karna zaroori hai).",
+            warning: "Isse loose motion (dast) ho sakta hai. Bina infection ke na lein."
+        },
+        {
+            name: "Azithromycin (Azithral 500)",
+            category: "Antibiotics",
+            type: "Tablet",
+            use: "Gale ki kharash, tonsils, typhoid bukhar aur sardi-khansi ke infection me.",
+            dose: "Din me 1 tablet, lagatar 3 se 5 din tak khane ke baad.",
+            warning: "Heart ke mareezon ko bina doctor ki advice ke nahi dena chahiye."
+        },
+        {
+            name: "Cefixime (Taxim-O 200)",
+            category: "Antibiotics",
             type: "Tablet / Syrup",
-            use: "Purani khansi, dhool-mitti se hone wali allergy, asthma ki halki shikayat aur naak ke andar sujan ko rokne ke liye.",
-            dose: "Raat ko sote samay sirf ek tablet.",
-            warning: "Isse bhi halki susti aati hai, din me lene se bachein."
+            use: "Typhoid bukhar, urine infection (UTI) aur kaan ke infection me.",
+            dose: "Subah-shaam ek-ek tablet khane ke baad.",
+            warning: "Bina doctor ke kahe course ko beech me achanak na chhodein."
+        },
+        {
+            name: "Ciprofloxacin (Cifran 500)",
+            category: "Antibiotics",
+            type: "Tablet",
+            use: "Skin infection, joints ka infection aur pet ke severe infections me.",
+            dose: "Din me do baar khane ke baad doctor ke anusar.",
+            warning: "Is dawa se chakkar aa sakte hain, isliye dhoop me nikalne se bachein."
+        },
+
+        // === BLOOD PRESSURE AUR HEART ===
+        {
+            name: "Amlodipine (Amlong / Stamlo 5)",
+            category: "BP aur Heart",
+            type: "Tablet",
+            use: "High Blood Pressure (Uchch raktachaap) ko control karne me.",
+            dose: "Din me ek baar fixed time par (Doctor ke bataye dose ke hisab se).",
+            warning: "Isse kuch logon ke takhno (ankles) me sujan aa sakti hai."
+        },
+        {
+            name: "Telmisartan (Telma 40)",
+            category: "BP aur Heart",
+            type: "Tablet",
+            use: "High BP ko kam karta hai aur Heart attack aur Kidney damage se bachata hai.",
+            dose: "Din me ek baar khana khane ke baad ya pehle.",
+            warning: "Pregnancy me yeh dawa bilkul banned (mana) hai."
+        },
+        {
+            name: "Atorvastatin (Lipitor / Tonact)",
+            category: "BP aur Heart",
+            type: "Tablet",
+            use: "Khoon me badhe hue kharab Cholesterol ko kam karne aur heart stroke rokne me.",
+            dose: "Raat ko sote samay 1 tablet.",
+            warning: "Agar maaspeshiyon me tez dard ho, toh doctor ko turant batayein."
+        },
+        {
+            name: "Aspirin (Ecosprin 75)",
+            category: "BP aur Heart",
+            type: "Tablet",
+            use: "Blood Thinner (Khoon patla karne wali). Heart attack ke khatre ko rokne me.",
+            dose: "Din me ek baar khane ke baad.",
+            warning: "Isse bleeding ka khatra badhta hai, isliye chot lagne par dhyan dein."
+        },
+
+        // === SUGAR (DIABETES) ===
+        {
+            name: "Metformin (Glycomet 500)",
+            category: "Sugar (Diabetes)",
+            type: "Tablet",
+            use: "Type 2 Diabetes ke mareezon me blood sugar level control karne me.",
+            dose: "Doctor ke kahe anusar, aamtaur par khane ke sath ya turant baad.",
+            warning: "Is dawa ko lene ke baad lamba upwas (vrat) na rakhein, sugar bohot kam ho sakti hai."
+        },
+        {
+            name: "Glimepiride (Amaryl)",
+            category: "Sugar (Diabetes)",
+            type: "Tablet",
+            use: "Pancreas se insulin badhakar blood sugar level ko turant kam karta hai.",
+            dose: "Subah ke pehle khane (breakfast) ke turant pehle ya sath me.",
+            warning: "Agar chakkar aaye ya paseena aaye, toh turant kuch meetha kha lein (Hypoglycemia)."
+        },
+
+        // === KHANSI AUR ALLERGY ===
+        {
+            name: "Cetirizine (Alerid / Okacet)",
+            category: "Khansi aur Allergy",
+            type: "Tablet",
+            use: "Sardi-jukham, naak behna, aankhon se pani aana aur skin ki khujli me.",
+            dose: "Raat ko sote samay 1 tablet.",
+            warning: "Ise khane ke baad neend aati hai, isliye driving ya bhaari machine na chalayein."
+        },
+        {
+            name: "Levocetirizine + Montelukast (Montair-LC)",
+            category: "Khansi aur Allergy",
+            type: "Tablet",
+            use: "Purani sardi, naak ki sujan, dhool se allergy aur khansi-asthma ke symptoms me.",
+            dose: "Raat ko khana khane ke baad ek tablet.",
+            warning: "Susti aur neend aana iska mukhya side effect hai."
+        },
+        {
+            name: "Ascoril LS / Benadryl",
+            category: "Khansi aur Allergy",
+            type: "Syrup",
+            use: "Balgam wali khansi (Wet Cough) aur gale ki kharash ko saaf karne me.",
+            dose: "Adults: 5-10 ml din me do se do se teen baar.",
+            warning: "Heart aur high BP ke mareez doctor se pooch kar hi lein."
+        },
+
+        // === VITAMINS AUR TAQAT ===
+        {
+            name: "Multivitamins + Minerals (Zincovit / Revital H)",
+            category: "Vitamins aur Taqat",
+            type: "Tablet / Capsule",
+            use: "Sharirik kamzori dur karne, immunity badhane aur bimari ke baad taqat ke liye.",
+            dose: "Din me ek baar, aamtaur par dopahar ya raat ke khane ke baad.",
+            warning: "Ise lene par peshab (urine) ka rang peela ho sakta hai, jo ki normal hai."
+        },
+        {
+            name: "Vitamin D3 Cholecalciferol (Calcirol Sachet)",
+            category: "Vitamins aur Taqat",
+            type: "Granules / Sachet",
+            use: "Haddiyon aur daanton ko mazboot karne aur Vitamin D ki kami poora karne me.",
+            dose: "Hafte me sirf ek baar (Once a week) doodh me gholkar.",
+            warning: "Doctor ke bataye hafton tak hi lein, rozana na khayein."
+        },
+        {
+            name: "Calcium + Vitamin D3 (Shelcal 500)",
+            category: "Vitamins aur Taqat",
+            type: "Tablet",
+            use: "Haddiyon ke dard, jodon ke dard aur calcium ki kami ko door karne me.",
+            dose: "Din me ek tablet khane ke baad (Doodh ya pani ke sath).",
+            warning: "Pathri (Kidney stone) ke mareez ise bina doctor ki salah ke na lein."
+        },
+        {
+            name: "Neurobion Forte",
+            category: "Vitamins aur Taqat",
+            type: "Tablet",
+            use: "Vitamin B-Complex ki dawa. Naso me dard, jhanjhanahat aur sujan ko theek karne me.",
+            dose: "Din me ek tablet rozana khane ke baad.",
+            warning: "Bina zarurat ke lambe samay tak na lein."
+        },
+
+        // === PET KE ROG ===
+        {
+            name: "Ofloxacin + Ornidazole (O2 Tablet)",
+            category: "Pet ke Rog",
+            type: "Tablet",
+            use: "Pet kharab hone, loose motion (dast) aur pechish (amoebiasis) ko rokne me.",
+            dose: "Subah-shaam ek-ek tablet khane ke baad (3 din tak).",
+            warning: "Is dawa ke sath paani khoob peena chahiye taaki dehydration na ho."
+        },
+        {
+            name: "Loperamide (Roko)",
+            category: "Pet ke Rog",
+            type: "Tablet",
+            use: "Achanak hone wale tez dast (diarrhea) ko turant rokne ke liye.",
+            dose: "Pehle 2 tablet ek sath, fir har dast ke baad 1 tablet (Max 4 in a day).",
+            warning: "Agar dast me khoon aa raha ho ya bukhar ho, toh ise bilkul na lein."
         },
         {
             name: "ORS - Oral Rehydration Salts (Electral)",
-            type: "Powder / Liquid",
-            use: "Body me paani ki kami (Dehydration), dastar (diarrhea) ya garmi me chakkar aane par body me namak aur paani balance karne ke liye.",
-            dose: "1 packet powder ko 1 litre saaf paani me gholkar dinbhar thoda-thoda peena hai.",
-            warning: "Ghol banane ke baad use 24 ghante ke andar hi khatam karein, baasi ghol na peein."
+            category: "Pet ke Rog",
+            type: "Powder",
+            use: "Dast ya ulti me sharir se pani aur namak ki kami (dehydration) ko door karne me.",
+            dose: "1 packet ko 1 litre saaf pani me gholkar dinbhar thoda-thoda peein.",
+            warning: "Ghol banane ke 24 ghante baad bacha hua paani phek dein, baasi na peein."
         }
     ];
 
+    // Function to search/filter from input box
     function searchMedicine() {
         const query = document.getElementById("searchInput").value.toLowerCase().trim();
         const resultContainer = document.getElementById("resultContainer");
         
+        // Remove active class from category buttons during search
+        const buttons = document.querySelectorAll('.cat-btn');
+        buttons.forEach(b => b.classList.remove('active'));
+
         if (query === "") {
             resultContainer.innerHTML = "<p style='text-align: center; color: #dc3545;'>Kripya kuch type karein!</p>";
             return;
         }
 
-        const results = medicineDatabase.filter(med => med.name.toLowerCase().includes(query));
+        const results = medicineDatabase.filter(med => 
+            med.name.toLowerCase().includes(query) || 
+            med.category.toLowerCase().includes(query) ||
+            med.use.toLowerCase().includes(query)
+        );
 
+        displayResults(results);
+    }
+
+    // Function to filter by clicking Category buttons
+    function filterCategory(catName) {
+        const resultContainer = document.getElementById("resultContainer");
+        
+        // Handle Active Button styling
+        const buttons = document.querySelectorAll('.cat-btn');
+        buttons.forEach(b => {
+            if(b.innerText.includes(catName) || (catName === 'All' && b.innerText === 'All')) {
+                b.classList.add('active');
+            } else {
+                b.classList.remove('active');
+            }
+        });
+
+        if (catName === 'All') {
+            displayResults(medicineDatabase);
+            return;
+        }
+
+        const results = medicineDatabase.filter(med => med.category === catName);
+        displayResults(results);
+    }
+
+    // Common function to display items
+    function displayResults(results) {
+        const resultContainer = document.getElementById("resultContainer");
+        
         if (results.length > 0) {
             resultContainer.innerHTML = ""; 
             results.forEach(med => {
                 const medHTML = `
                     <div class="med-card">
                         <div class="med-name">${med.name}</div>
-                        <span class="med-type">${med.type}</span>
+                        <div class="med-meta">
+                            <span class="med-type">${med.type}</span>
+                            <span class="med-cat-tag">${med.category}</span>
+                        </div>
                         <div class="med-details">
                             <p><strong>Upyog (Use):</strong> ${med.use}</p>
                             <p><strong>Dose:</strong> ${med.dose}</p>
@@ -264,7 +473,7 @@
                 resultContainer.innerHTML += medHTML;
             });
         } else {
-            resultContainer.innerHTML = "<p style='text-align: center; color: #777;'>Maaf kijiye, is dawa ki jankari abhi database me nahi hai.</p>";
+            resultContainer.innerHTML = "<p style='text-align: center; color: #777;'>Maaf kijiye, is dawa ya category ki jankari abhi nahi hai.</p>";
         }
     }
 </script>
